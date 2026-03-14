@@ -1,5 +1,5 @@
 # Dùng môi trường Java 17
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:21-jdk-alpine
 
 # Khai báo thư mục làm việc
 WORKDIR /app
