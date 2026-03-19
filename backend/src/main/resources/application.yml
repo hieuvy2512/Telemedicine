@@ -3,26 +3,14 @@ server:
 
 spring:
   datasource:
-    # Trỏ thẳng vào Docker Postgres đang chạy ở máy bạn
-    url: jdbc:postgresql://localhost:5432/tele_db
+    # Đã đổi tên thành telemedicine và ép múi giờ Ho_Chi_Minh
+    url: jdbc:postgresql://localhost:5432/telemedicine
     username: admin
     password: 123
     driver-class-name: org.postgresql.Driver
   
   jpa:
     hibernate:
-      # Lệnh này bảo Java: Mỗi lần chạy code, hãy tự động tạo/cập nhật Bảng trong DB
       ddl-auto: update
+      
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        # Cho Hibernate biết mình đang dùng Postgres để nó xử lý UUID chuẩn nhất
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-
-# Tùy chỉnh đường dẫn Swagger cho ngắn gọn
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-  api-docs:
-    path: /api-docs

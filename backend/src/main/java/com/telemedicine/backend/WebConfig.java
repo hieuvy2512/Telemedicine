@@ -1,3 +1,5 @@
+package com.telemedicine.backend; // BẮT BUỘC PHẢI CÓ DÒNG NÀY
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -7,8 +9,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "https://telemedicine-siu.vercel.app") // Thay link thật
-                                                                                                // của bạn vào đây!
+                .allowedOrigins("http://localhost:3000", "https://telemedicine-siu.vercel.app")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
