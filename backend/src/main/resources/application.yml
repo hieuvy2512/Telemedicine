@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     # Đã đổi tên thành telemedicine và ép múi giờ Ho_Chi_Minh
-    url: jdbc:postgresql://localhost:5432/telemedicine
+    url: jdbc:postgresql://localhost:5432/telemedicine?options=-c%20timezone=UTC
     username: admin
     password: 123
     driver-class-name: org.postgresql.Driver
