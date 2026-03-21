@@ -1,8 +1,8 @@
 package com.telemedicine.backend.repository;
 
-import com.telemedicine.backend.entity.Doctor;
+import com.telemedicine.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
-public interface DoctorRepository extends JpaRepository<Doctor, UUID> {
+public interface UserRepository extends JpaRepository<User, UUID> {
 }

@@ -1,5 +1,6 @@
 package com.telemedicine.backend.entity;
 
+import com.telemedicine.backend.entity.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -34,7 +35,7 @@ public class Appointment {
     private DoctorSchedule schedule;
 
     @Builder.Default
-    private Status appointmentStatus = Status.PENDING; // PENDING, CONFIRMED, CANCELLED, COMPLETED
+    private AppointmentStatus status = AppointmentStatus.PENDING; // PENDING, CONFIRMED, CANCELLED, COMPLETED
 
     @Column(name = "patient_notes", columnDefinition = "TEXT")
     private String patientNotes;
@@ -61,11 +62,4 @@ public class Appointment {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-}
-
-enum Status {
-    PENDING,
-    CONFIRMED,
-    CANCELLED,
-    COMPLETED
 }

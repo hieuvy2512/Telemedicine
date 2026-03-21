@@ -1,5 +1,6 @@
 package com.telemedicine.backend.entity;
 
+import com.telemedicine.backend.entity.enums.ScheduleStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
-// 1. Đảm bảo các annotation nằm sát nhau và ngay trên đầu class
 @Entity
 @Table(name = "doctor_schedules")
 @Getter
@@ -34,7 +34,6 @@ public class DoctorSchedule {
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
-    // Đổi tên thành ScheduleStatus để không bị trùng (Duplicate)
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private ScheduleStatus status = ScheduleStatus.AVAILABLE;
@@ -42,11 +41,4 @@ public class DoctorSchedule {
     @Column(name = "slot_duration")
     @Builder.Default
     private Integer slotDuration = 30;
-}
-
-// 2. Để Enum ở dưới cùng, bên ngoài dấu ngoặc nhọn của class trên
-enum ScheduleStatus {
-    AVAILABLE,
-    BOOKED,
-    PAUSED
 }
