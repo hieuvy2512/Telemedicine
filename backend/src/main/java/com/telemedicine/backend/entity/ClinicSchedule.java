@@ -9,20 +9,28 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "doctor_schedules")
+@Table(name = "clinic_schedules")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DoctorSchedule {
+public class ClinicSchedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id", nullable = false)
+    @JoinColumn(name = "clinic_id", nullable = false)
+    private Clinic clinic;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialty_id")
+    private Specialty specialty;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
     @Column(name = "working_date", nullable = false)
@@ -34,8 +42,13 @@ public class DoctorSchedule {
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
-    @Column(name = "slot_duration")
-    private Integer slotDuration;
+    @Builder.Default
+    @Column(name = "max_patients", nullable = false)
+    private Integer maxPatients = 10;
+
+    @Builder.Default
+    @Column(name = "current_patients", nullable = false)
+    private Integer currentPatients = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

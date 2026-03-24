@@ -1,0 +1,55 @@
+// package com.telemedicine.backend.controller.public_api;
+
+// import com.telemedicine.backend.dto.response.*;
+// import com.telemedicine.backend.service.public_api.PublicDoctorService;
+
+// import lombok.RequiredArgsConstructor;
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.web.bind.annotation.*;
+
+// import java.util.List;
+// import java.util.UUID;
+
+// @RestController
+// @RequestMapping("/api/v1/public/doctors")
+// @RequiredArgsConstructor
+// @CrossOrigin(originPatterns = "*") // FIX LỖI CORS Ở ĐÂY
+// public class PublicDoctorController {
+
+//     private final PublicDoctorService publicDoctorService;
+
+//     @GetMapping
+//     public ResponseEntity<ApiResponse<List<DoctorCardResponse>>> getHomepageDoctors() {
+//         ApiResponse<List<DoctorCardResponse>> response = ApiResponse.<List<DoctorCardResponse>>builder()
+//                 .code(200)
+//                 .message("Lấy danh sách bác sĩ trang chủ thành công!")
+//                 .data(publicDoctorService.getAllDoctorsForHomepage()) // Nhét đĩa DTO vào khay
+//                 .build();
+
+//         return ResponseEntity.ok(response); // Giao cho Shipper
+//     }
+
+//     @GetMapping("/{id}")
+//     public ResponseEntity<ApiResponse<DoctorDetailResponse>> getDoctorDetail(@PathVariable UUID id) {
+//         ApiResponse<DoctorDetailResponse> response = ApiResponse.<DoctorDetailResponse>builder()
+//                 .code(200)
+//                 .message("Lấy chi tiết bác sĩ thành công!")
+//                 .data(publicDoctorService.getDoctorDetail(id))
+//                 .build();
+
+//         return ResponseEntity.ok(response);
+//     }
+
+//     @GetMapping("/{id}/schedules")
+//     public ResponseEntity<ApiResponse<List<DoctorScheduleResponse>>> getDoctorSchedules(@PathVariable UUID id) {
+
+//         // Sửa <DoctorScheduleResponse> thành <List<DoctorScheduleResponse>> ở dòng dưới
+//         ApiResponse<List<DoctorScheduleResponse>> response = ApiResponse.<List<DoctorScheduleResponse>>builder()
+//                 .code(200)
+//                 .message("Lấy lịch khám của bác sĩ thành công!")
+//                 .data(publicDoctorService.getGroupedSchedules(id))
+//                 .build();
+
+//         return ResponseEntity.ok(response);
+//     }
+// }PublicDoctorController

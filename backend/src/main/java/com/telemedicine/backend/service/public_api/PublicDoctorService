@@ -1,0 +1,116 @@
+// package com.telemedicine.backend.service.public_api;
+
+// import com.telemedicine.backend.dto.response.*;
+// import com.telemedicine.backend.entity.Doctor;
+// import com.telemedicine.backend.entity.DoctorSchedule;
+// import com.telemedicine.backend.entity.Specialty;
+// import com.telemedicine.backend.repository.DoctorRepository;
+// import com.telemedicine.backend.repository.DoctorScheduleRepository;
+// import lombok.RequiredArgsConstructor;
+// import org.springframework.stereotype.Service;
+// import org.springframework.transaction.annotation.Transactional;
+
+// import java.time.LocalDate;
+// import java.util.Comparator;
+// import java.util.List;
+// import java.util.Map;
+// import java.util.UUID;
+// import java.util.stream.Collectors;
+
+// @Service
+// @RequiredArgsConstructor
+// @Transactional(readOnly = true)
+// public class PublicDoctorService {
+
+//         private final DoctorRepository doctorRepository;
+//         private final DoctorScheduleRepository doctorScheduleRepository;
+
+//         public List<DoctorCardResponse> getAllDoctorsForHomepage() {
+//                 return doctorRepository.findAll().stream()
+//                                 .filter(doctor -> doctor.getUser() != null)
+//                                 .map(doctor -> {
+//                                         // Lấy thông tin user để map vào firstName/lastName của DTO
+//                                         String ln = doctor.getUser().getLastName() != null
+//                                                         ? doctor.getUser().getLastName()
+//                                                         : "";
+//                                         String fn = doctor.getUser().getFirstName() != null
+//                                                         ? doctor.getUser().getFirstName()
+//                                                         : "";
+
+//                                         // Chuyển đổi List<Specialty> (Entity) thành List<String> (Tên chuyên khoa)
+//                                         List<String> specialtyNames = (doctor.getSpecialties() != null)
+//                                                         ? doctor.getSpecialties().stream()
+//                                                                         .map(Specialty::getName)
+//                                                                         .collect(Collectors.toList())
+//                                                         : List.of("Đa khoa");
+
+//                                         return DoctorCardResponse.builder()
+//                                                         .id(doctor.getId())
+//                                                         .lastName(ln)
+//                                                         .firstName(fn)
+//                                                         .avatarUrl(doctor.getUser().getAvatarUrl())
+//                                                         .title(doctor.getTitle())
+//                                                         .specialties(specialtyNames) // Khớp với trường List<String>
+//                                                                                      // specialties trong DTO
+//                                                         .build();
+//                                 })
+//                                 .collect(Collectors.toList());
+//         }
+
+//         public DoctorDetailResponse getDoctorDetail(UUID doctorId) {
+//                 Doctor doctor = doctorRepository.findById(doctorId)
+//                                 .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ"));
+
+//                 return DoctorDetailResponse.builder()
+//                                 .id(doctor.getId())
+//                                 .fullName(doctor.getUser().getLastName() + " " + doctor.getUser().getFirstName())
+//                                 .avatarUrl(doctor.getUser().getAvatarUrl())
+//                                 .title(doctor.getTitle())
+//                                 .specialties(
+//                                                 doctor.getSpecialties() != null && !doctor.getSpecialties().isEmpty()
+//                                                                 ? doctor.getSpecialties().stream()
+//                                                                                 .map(Specialty::getName)
+//                                                                                 .toList()
+//                                                                 : List.of("Đa khoa"))
+//                                 .trainingProcess(doctor.getTrainingProcess())
+//                                 .experience(doctor.getExperience())
+//                                 .experienceYears(doctor.getExperienceYears())
+//                                 .bio(doctor.getBio())
+//                                 .consultationFee(doctor.getOfflineFee())
+//                                 .build();
+//         }
+
+//         public List<DoctorScheduleResponse> getGroupedSchedules(UUID doctorId) {
+//                 List<DoctorSchedule> rawSchedules = doctorScheduleRepository.findAll().stream()
+//                                 .filter(s -> s.getDoctor() != null && s.getDoctor().getId().equals(doctorId))
+//                                 .filter(s -> s.getWorkingDate() != null
+//                                                 && !s.getWorkingDate().isBefore(LocalDate.now()))
+//                                 .filter(s -> s.getStatus() != null && s.getStatus().name().equals("AVAILABLE"))
+//                                 .collect(Collectors.toList());
+
+//                 if (rawSchedules.isEmpty())
+//                         return List.of();
+
+//                 Map<LocalDate, List<DoctorSchedule>> groupedByDate = rawSchedules.stream()
+//                                 .collect(Collectors.groupingBy(DoctorSchedule::getWorkingDate));
+
+//                 return groupedByDate.entrySet().stream()
+//                                 .sorted(Map.Entry.comparingByKey())
+//                                 .map(entry -> DoctorScheduleResponse.builder()
+//                                                 .date(entry.getKey())
+//                                                 .dateDisplay(DoctorScheduleResponse
+//                                                                 .formatVietnameseDate(entry.getKey()))
+//                                                 .timeSlots(entry.getValue().stream()
+//                                                                 .sorted(Comparator.comparing(
+//                                                                                 DoctorSchedule::getStartTime))
+//                                                                 .map(s -> ScheduleDto.builder()
+//                                                                                 .scheduleId(s.getId())
+//                                                                                 .workingDate(s.getWorkingDate())
+//                                                                                 .startTime(s.getStartTime())
+//                                                                                 .endTime(s.getEndTime())
+//                                                                                 .build())
+//                                                                 .collect(Collectors.toList()))
+//                                                 .build())
+//                                 .collect(Collectors.toList());
+//         }
+// }

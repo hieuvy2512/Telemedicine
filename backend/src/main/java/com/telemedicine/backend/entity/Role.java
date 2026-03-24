@@ -17,7 +17,7 @@ public class Role {
     private Integer id;
 
     @Column(nullable = false, unique = true)
-    private String name; // ADMIN, DOCTOR, PATIENT
+    private String name; // Vd: ROLE_PATIENT, ROLE_DOCTOR, ROLE_CLINIC_ADMIN, ROLE_ADMIN
 
     private String description;
 }

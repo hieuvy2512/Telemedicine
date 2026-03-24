@@ -14,15 +14,15 @@ public class Specialty {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(unique = true)
+    @Column(name = "slug")
     private String slug;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "icon_url")

@@ -1,5 +1,6 @@
 package com.telemedicine.backend.entity;
 
+import com.telemedicine.backend.entity.enums.VerificationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -23,38 +25,52 @@ public class Doctor {
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialty_id")
     private Specialty specialty;
 
+    @Column(name = "title")
     private String title;
-
-    @Column(columnDefinition = "TEXT")
-    private String bio;
-
-    @Column(name = "consultation_fee", nullable = false, precision = 12, scale = 2)
-    private BigDecimal consultationFee;
 
     @Column(name = "experience_years")
     private Integer experienceYears;
 
-    @Builder.Default
-    @Column(name = "rating_average", precision = 3, scale = 2)
-    private BigDecimal ratingAverage = BigDecimal.ZERO;
+    @Column(name = "consultation_fee")
+    private BigDecimal consultationFee;
 
-    @Builder.Default
+    @Column(name = "bio", columnDefinition = "TEXT")
+    private String bio;
+
+    @Column(name = "rating_average")
+    private Double ratingAverage;
+
     @Column(name = "rating_count")
-    private Integer ratingCount = 0;
+    private Integer ratingCount;
 
-    @Column(name = "certificate_url")
-    private String certificateUrl;
+    @Column(name = "practice_address")
+    private String practiceAddress;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "doctor_practice_images", joinColumns = @JoinColumn(name = "doctor_id"))
+    @Column(name = "image_url")
+    private Set<String> practiceImages;
 
     @Builder.Default
-    @Column(name = "is_verified_doctor")
-    private Boolean isVerifiedDoctor = false;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "verification_status", nullable = false)
+    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "doctor_identity_docs", joinColumns = @JoinColumn(name = "doctor_id"))
+    @Column(name = "document_url")
+    private Set<String> identityDocuments;
+
+    @Builder.Default
+    @Column(name = "is_payment_required")
+    private Boolean isPaymentRequired = false;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

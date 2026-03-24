@@ -1,6 +1,6 @@
 package com.telemedicine.backend.entity;
 
-import com.telemedicine.backend.entity.enums.AppointmentStatus;
+import com.telemedicine.backend.entity.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,34 +23,48 @@ public class Appointment {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_profile_id")
+    @JoinColumn(name = "patient_profile_id", nullable = false)
     private PatientProfile patientProfile;
 
+    // --- LUỒNG BÁC SĨ TỰ DO ---
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doctor_schedule_id")
+    private DoctorSchedule doctorSchedule;
+
+    // --- LUỒNG PHÒNG KHÁM / BỆNH VIỆN ---
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "clinic_id")
+    private Clinic clinic;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "clinic_schedule_id")
+    private ClinicSchedule clinicSchedule;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "clinic_service_id")
+    private ClinicService clinicService;
+
+    // --- CHUNG ---
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", unique = true)
-    private DoctorSchedule schedule;
-
-    @Builder.Default
-    private AppointmentStatus status = AppointmentStatus.PENDING; // PENDING, CONFIRMED, CANCELLED, COMPLETED
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialty_id")
+    private Specialty specialty;
 
     @Column(name = "patient_notes", columnDefinition = "TEXT")
     private String patientNotes;
 
-    @Column(name = "video_call_room_id")
-    private String videoCallRoomId;
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private AppointmentStatus status = AppointmentStatus.PENDING;
 
-    @Column(name = "video_call_url")
-    private String videoCallUrl;
-
-    @Column(name = "actual_start_time")
-    private LocalDateTime actualStartTime;
-
-    @Column(name = "actual_end_time")
-    private LocalDateTime actualEndTime;
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false)
+    private PaymentStatus paymentStatus = PaymentStatus.UNPAID;
 
     @Column(name = "payment_transaction_id")
     private String paymentTransactionId;

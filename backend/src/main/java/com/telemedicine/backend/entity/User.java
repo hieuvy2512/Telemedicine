@@ -15,25 +15,36 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
     @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
 
-    @Column(unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
+    // Best Practice cho Spring Security: Đặt tên biến là 'password' để tự động
+    // match với phương thức getPassword() của interface UserDetails.
+    // Dưới database vẫn lưu đúng tên cột là 'password_hash'.
     @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    private String password;
 
-    // Khóa ngoại liên kết với bản roles
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id")
-    private Role role;
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
     @Builder.Default
     @Column(name = "is_active")
@@ -42,9 +53,6 @@ public class User {
     @Builder.Default
     @Column(name = "is_verified_phone")
     private Boolean isVerifiedPhone = false;
-
-    @Column(name = "avatar_url")
-    private String avatarUrl;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

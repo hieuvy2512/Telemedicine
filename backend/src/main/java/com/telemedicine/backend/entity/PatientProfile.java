@@ -5,7 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -24,56 +23,40 @@ public class PatientProfile {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
-
-    @Column(nullable = false)
+    @Column(name = "dob")
     private LocalDate dob;
 
+    @Column(name = "gender")
     private String gender;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "address")
     private String address;
 
-    @Column(columnDefinition = "TEXT")
-    private String ward;
-
-    @Column(columnDefinition = "TEXT")
-    private String district;
-
-    private String city;
-
-    @Column(name = "citizen_id", columnDefinition = "TEXT")
+    @Column(name = "citizen_id")
     private String citizenId;
-
-    @Column(columnDefinition = "TEXT")
-    private String job;
-
-    @Column(name = "health_id_number", columnDefinition = "TEXT")
-    private String healthIdNumber;
-
-    @Column(columnDefinition = "TEXT")
-    private String email;
 
     @Column(name = "blood_group")
     private String bloodGroup;
 
-    @Column(name = "weight_kg", precision = 5, scale = 2)
-    private BigDecimal weightKg;
-
     @Column(name = "height_cm")
-    private Integer heightCm;
+    private Double heightCm;
+
+    @Column(name = "weight_kg")
+    private Double weightKg;
 
     @Column(name = "medical_history", columnDefinition = "TEXT")
     private String medicalHistory;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "allergies", columnDefinition = "TEXT")
     private String allergies;
 
     @CreationTimestamp

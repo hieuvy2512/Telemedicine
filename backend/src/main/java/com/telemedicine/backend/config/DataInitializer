@@ -1,0 +1,133 @@
+// package com.telemedicine.backend.config;
+
+// import com.telemedicine.backend.entity.*;
+// import com.telemedicine.backend.entity.enums.AppointmentStatus;
+// import com.telemedicine.backend.entity.enums.ScheduleStatus;
+// import com.telemedicine.backend.repository.*;
+// import lombok.RequiredArgsConstructor;
+// import lombok.extern.slf4j.Slf4j;
+// import org.springframework.boot.CommandLineRunner;
+// import org.springframework.stereotype.Component;
+// import org.springframework.transaction.annotation.Transactional;
+
+// import java.math.BigDecimal;
+// import java.time.LocalDate;
+// import java.time.LocalTime;
+// import java.util.Arrays;
+// import java.util.List;
+
+// @Component
+// @RequiredArgsConstructor
+// @Slf4j
+// public class DataInitializer implements CommandLineRunner {
+
+//         private final RoleRepository roleRepository;
+//         private final SpecialtyRepository specialtyRepository;
+//         private final UserRepository userRepository;
+//         private final DoctorRepository doctorRepository;
+//         private final PatientProfileRepository patientProfileRepository;
+//         private final DoctorScheduleRepository doctorScheduleRepository;
+//         private final AppointmentRepository appointmentRepository;
+//         private final MedicalRecordRepository medicalRecordRepository;
+//         private final ReviewRepository doctorReviewRepository;
+
+//         @Override
+//         @Transactional
+//         public void run(String... args) throws Exception {
+//                 log.info("--- BẮT ĐẦU KHỞI TẠO DỮ LIỆU MẪU ---");
+
+//                 if (roleRepository.count() == 0) {
+//                         seedData();
+//                         log.info("--- ĐÃ KHỞI TẠO DỮ LIỆU THÀNH CÔNG ---");
+//                 } else {
+//                         log.info("Dữ liệu đã tồn tại, bỏ qua bước khởi tạo.");
+//                 }
+//         }
+
+//         private void seedData() {
+//                 // 1. Tạo Roles
+//                 Role adminRole = roleRepository.save(Role.builder().name("ADMIN").description("Quản trị viên").build());
+//                 Role doctorRole = roleRepository.save(Role.builder().name("DOCTOR").description("Bác sĩ").build());
+//                 Role patientRole = roleRepository.save(Role.builder().name("PATIENT").description("Bệnh nhân").build());
+
+//                 // 2. Tạo Chuyên khoa
+//                 Specialty nhiKhoa = specialtyRepository.save(Specialty.builder()
+//                                 .name("Nhi khoa").slug("nhi-khoa").description("Chuyên khám cho trẻ em").build());
+//                 Specialty sanPhuKhoa = specialtyRepository.save(Specialty.builder()
+//                                 .name("Sản phụ khoa").slug("san-phu-khoa").description("Chăm sóc sức khỏe phụ nữ")
+//                                 .build());
+//                 Specialty daLieu = specialtyRepository.save(Specialty.builder()
+//                                 .name("Da liễu").slug("da-lieu").description("Các bệnh lý về da").build());
+//                 Specialty tieuHoa = specialtyRepository.save(Specialty.builder()
+//                                 .name("Tiêu hóa").slug("tieu-hoa").description("Hệ tiêu hóa và nội soi").build());
+
+//                 String password = "$2a$10$xyz123fakehash";
+
+//                 // 3. Tạo Bác sĩ 1: Lê Thị Minh Hồng
+//                 User userDoc1 = userRepository.save(User.builder()
+//                                 .email("hong.le@gmail.com").phoneNumber("0911111111")
+//                                 .passwordHash(password).role(doctorRole).isActive(true)
+//                                 .firstName("Hồng").lastName("Lê Thị Minh")
+//                                 .avatarUrl("https://i.pravatar.cc/150?u=hongle")
+//                                 .build());
+
+//                 Doctor doc1 = doctorRepository.save(Doctor.builder()
+//                                 .user(userDoc1).specialties(List.of(getSpecialtyBySlug(specialties, "nhi-khoa")))
+//                                 .title("BS. CK2")
+//                                 .experienceYears(20).consultationFee(new BigDecimal("300000"))
+//                                 .bio("Bác sĩ có nhiều năm kinh nghiệm tại các bệnh viện nhi lớn.")
+//                                 .isVerifiedDoctor(true).ratingAverage(new BigDecimal("5.0")).ratingCount(120)
+//                                 .build());
+
+//                 // 4. Tạo Bác sĩ 2: Lâm Việt Trung
+//                 User userDoc2 = userRepository.save(User.builder()
+//                                 .email("trung.lam@gmail.com").phoneNumber("0922222222")
+//                                 .passwordHash(password).role(doctorRole).isActive(true)
+//                                 .firstName("Trung").lastName("Lâm Việt")
+//                                 .avatarUrl("https://i.pravatar.cc/150?u=lamtrung")
+//                                 .build());
+
+//                 Doctor doc2 = doctorRepository.save(Doctor.builder()
+//                                 .user(userDoc2).specialties(List.of(getSpecialtyBySlug(specialties, "tieu-hoa")))
+//                                 .title("PGS. TS. BS")
+//                                 .experienceYears(25).consultationFee(new BigDecimal("500000"))
+//                                 .bio("Chuyên gia đầu ngành về tiêu hóa và gan mật.")
+//                                 .isVerifiedDoctor(true).ratingAverage(new BigDecimal("4.9")).ratingCount(85)
+//                                 .build());
+
+//                 // 5. Tạo Bác sĩ 3: Nguyễn Văn A (Để slider có thêm người)
+//                 User userDoc3 = userRepository.save(User.builder()
+//                                 .email("a.nguyen@gmail.com").phoneNumber("0944444444")
+//                                 .passwordHash(password).role(doctorRole).isActive(true)
+//                                 .firstName("A").lastName("Nguyễn Văn")
+//                                 .avatarUrl("https://i.pravatar.cc/150?u=anguyen")
+//                                 .build());
+
+//                 doctorRepository.save(Doctor.builder()
+//                                 .user(userDoc3).specialties(daLieu).title("ThS. BS")
+//                                 .experienceYears(10).consultationFee(new BigDecimal("200000"))
+//                                 .bio("Chuyên điều trị các bệnh lý da liễu thẩm mỹ.")
+//                                 .isVerifiedDoctor(true).ratingAverage(new BigDecimal("4.5")).ratingCount(40)
+//                                 .build());
+
+//                 // 6. Tạo Lịch khám cho BS Hồng (Ngày mai và ngày kia)
+//                 createSchedulesForDoctor(doc1, LocalDate.now().plusDays(1));
+//                 createSchedulesForDoctor(doc1, LocalDate.now().plusDays(2));
+
+//                 log.info("Dữ liệu mẫu cho Homepage đã sẵn sàng.");
+//         }
+
+//         private void createSchedulesForDoctor(Doctor doctor, LocalDate date) {
+//                 List<LocalTime> times = Arrays.asList(
+//                                 LocalTime.of(8, 0), LocalTime.of(9, 0),
+//                                 LocalTime.of(10, 0), LocalTime.of(14, 0),
+//                                 LocalTime.of(15, 0));
+//                 for (LocalTime t : times) {
+//                         doctorScheduleRepository.save(DoctorSchedule.builder()
+//                                         .doctor(doctor).workingDate(date)
+//                                         .startTime(t).endTime(t.plusMinutes(45))
+//                                         .status(ScheduleStatus.AVAILABLE)
+//                                         .build());
+//                 }
+//         }
+// }
