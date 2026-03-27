@@ -1,11 +1,9 @@
 package com.telemedicine.backend.entity;
 
-import com.telemedicine.backend.entity.enums.ScheduleStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -14,30 +12,15 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class DoctorSchedule {
+@SuperBuilder
+public class DoctorSchedule extends BaseSchedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    // Trỏ vào hồ sơ khám tự do (Như Giải pháp 2 ở bước trước)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
-
-    @Column(name = "working_date", nullable = false)
-    private LocalDate workingDate;
-
-    @Column(name = "start_time", nullable = false)
-    private LocalTime startTime;
-
-    @Column(name = "end_time", nullable = false)
-    private LocalTime endTime;
-
-    @Column(name = "slot_duration")
-    private Integer slotDuration;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private ScheduleStatus status;
+    @JoinColumn(name = "freelance_profile_id", nullable = false)
+    private DoctorFreelanceProfile freelanceProfile;
 }

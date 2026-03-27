@@ -1,11 +1,9 @@
 package com.telemedicine.backend.entity;
 
-import com.telemedicine.backend.entity.enums.ScheduleStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -14,8 +12,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class ClinicSchedule {
+@SuperBuilder
+public class ClinicSchedule extends BaseSchedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,32 +23,14 @@ public class ClinicSchedule {
     @JoinColumn(name = "clinic_id", nullable = false)
     private Clinic clinic;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "specialty_id")
-    private Specialty specialty;
-
+    // Tùy chọn: Lịch này có thể gắn định danh một bác sĩ cụ thể tại phòng khám
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
-    @Column(name = "working_date", nullable = false)
-    private LocalDate workingDate;
-
-    @Column(name = "start_time", nullable = false)
-    private LocalTime startTime;
-
-    @Column(name = "end_time", nullable = false)
-    private LocalTime endTime;
-
-    @Builder.Default
-    @Column(name = "max_patients", nullable = false)
-    private Integer maxPatients = 10;
-
-    @Builder.Default
-    @Column(name = "current_patients", nullable = false)
-    private Integer currentPatients = 0;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private ScheduleStatus status;
+    // Tùy chọn: Hoặc gắn cho một chuyên khoa cụ thể (Nếu bệnh nhân không chọn đích
+    // danh bác sĩ)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialty_id")
+    private Specialty specialty;
 }

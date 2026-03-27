@@ -8,6 +8,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -15,7 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -61,4 +68,45 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    // =========================================================================
+    // CÁC HÀM BẮT BUỘC CỦA SPRING SECURITY (USERDETAILS)
+    // =========================================================================
+
+    // 1. Dịch quyền (Role) của User sang ngôn ngữ Security
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Trả về List chứa 1 quyền duy nhất. Ví dụ: ROLE_PATIENT
+        return List.of(new SimpleGrantedAuthority(role.getName()));
+    }
+
+    // 2. Dùng Email làm định danh (Username) để đăng nhập
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    // 3. Tài khoản có bị hết hạn không? -> Trả về true (không hết hạn)
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    // 4. Tài khoản có bị khóa không? -> Trả về true (không khóa)
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    // 5. Mật khẩu có bị hết hạn không? -> Trả về true (không hết hạn)
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    // 6. Tài khoản có đang kích hoạt không? -> Lấy cột isActive trong DB của bạn
+    @Override
+    public boolean isEnabled() {
+        return isActive;
+    }
 }

@@ -3,11 +3,7 @@ package com.telemedicine.backend.entity;
 import com.telemedicine.backend.entity.enums.VerificationStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,9 +34,6 @@ public class Doctor {
     @Column(name = "experience_years")
     private Integer experienceYears;
 
-    @Column(name = "consultation_fee")
-    private BigDecimal consultationFee;
-
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
 
@@ -49,14 +42,6 @@ public class Doctor {
 
     @Column(name = "rating_count")
     private Integer ratingCount;
-
-    @Column(name = "practice_address")
-    private String practiceAddress;
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "doctor_practice_images", joinColumns = @JoinColumn(name = "doctor_id"))
-    @Column(name = "image_url")
-    private Set<String> practiceImages;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
@@ -68,15 +53,7 @@ public class Doctor {
     @Column(name = "document_url")
     private Set<String> identityDocuments;
 
-    @Builder.Default
-    @Column(name = "is_payment_required")
-    private Boolean isPaymentRequired = false;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    // THÊM DÒNG NÀY: Liên kết ngược lại với Freelance Profile (Nếu có)
+    @OneToOne(mappedBy = "doctor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private DoctorFreelanceProfile freelanceProfile;
 }

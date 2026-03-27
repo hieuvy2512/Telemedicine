@@ -1,61 +1,75 @@
 package com.telemedicine.backend.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.telemedicine.backend.security.JwtAuthenticationFilter;
 
-@Configuration // Đánh dấu đây là file cấu hình của Spring Boot
-@EnableWebSecurity // Kích hoạt tính năng Bảo mật web
+@Configuration
+@EnableWebSecurity
+// Bật tính năng phân quyền ngay trên từng hàm trong Controller bằng
+// @PreAuthorize
+@EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    // Inject Filter kiểm tra Token do chúng ta tự viết (sẽ làm ở bước sau)
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
+    // Inject Provider chứa logic xác thực (kiểm tra email, so sánh password)
+    private final AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Tắt CSRF (Cross-Site Request Forgery) vì chúng ta dùng REST API và Token
-                // (JWT) chứ không dùng Cookie/Session
-                .csrf(csrf -> csrf.disable())
+                // 1. Cấu hình CORS tích hợp sâu vào Security
+                .cors(cors -> cors.configure(http))
 
-                // 2. Cấu hình quản lý Session là STATELESS (Không lưu trạng thái đăng nhập trên
-                // server)
+                // 2. Tắt CSRF vì sử dụng JWT (Bắt buộc)
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // 3. Quản lý Session là STATELESS (Mỗi request đều là một request mới, server
+                // không nhớ ai cả)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // 3. Phân quyền các đường dẫn (URL)
+                // 4. Khai báo AuthenticationProvider
+                .authenticationProvider(authenticationProvider)
+
+                // 5. CHÚ Ý: Chèn bộ lọc JWT của chúng ta vào TRƯỚC bộ lọc đăng nhập mặc định
+                // của Spring
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // 6. Phân quyền URL (Routing Security)
                 .authorizeHttpRequests(auth -> auth
-                        // Những API công khai, ai cũng được gọi (VD: Đăng ký, Đăng nhập, Xem danh sách
-                        // bác sĩ, xem Swagger Docs)
-                        .requestMatchers("/api/v1/public/**", "/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**")
+                        // Public APIs (Ai cũng vào được)
+                        .requestMatchers(
+                                "/api/v1/auth/**", // Đăng nhập, Đăng ký, Refresh Token
+                                "/api/v1/public/**", // Xem danh sách Bác sĩ, Phòng khám
+                                "/v3/api-docs/**", // Dữ liệu cho Swagger
+                                "/swagger-ui/**", // Giao diện Swagger
+                                "/swagger-ui.html")
                         .permitAll()
 
-                        // Những API dành riêng cho Bệnh nhân (Yêu cầu user có quyền PATIENT)
-                        .requestMatchers("/api/v1/patient/**").hasAuthority("PATIENT")
+                        // Private APIs - Dựa vào cột 'name' trong bảng Role (VD: ROLE_PATIENT,
+                        // ROLE_DOCTOR)
+                        // Spring Security dùng hàm hasRole("X") sẽ tự động gắn thêm tiền tố "ROLE_"
+                        // thành "ROLE_X" để so sánh với Database.
+                        .requestMatchers("/api/v1/patient/**").hasRole("PATIENT")
+                        .requestMatchers("/api/v1/doctor/**").hasRole("DOCTOR")
+                        .requestMatchers("/api/v1/clinic/**").hasAnyRole("CLINIC_ADMIN", "ADMIN")
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
-                        // Những API dành riêng cho Bác sĩ (Yêu cầu user có quyền DOCTOR)
-                        .requestMatchers("/api/v1/doctor/**").hasAuthority("DOCTOR")
-
-                        // Những API dành riêng cho Quản trị viên (Yêu cầu user có quyền ADMIN)
-                        .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
-
-                        // Tất cả các request khác chưa được liệt kê ở trên đều bắt buộc phải đăng nhập
-                        // (có token hợp lệ)
+                        // Mọi request khác đều phải có Token hợp lệ
                         .anyRequest().authenticated());
 
-        // Lưu ý: Sau này khi bạn làm tính năng Đăng nhập bằng JWT (JSON Web Token),
-        // bạn sẽ cần add thêm một dòng code ở đây để kiểm tra Token trước khi cho user
-        // đi tiếp.
-
         return http.build();
-    }
-
-    // Bean này dùng để mã hóa mật khẩu.
-    // Thay vì lưu "123456" vào database, nó sẽ băm ra thành chuỗi "$2a$10$..." cực
-    // kỳ an toàn.
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
